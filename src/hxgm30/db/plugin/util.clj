@@ -11,7 +11,7 @@
 
 (defn get-db-ns
   [^Keyword backend]
-  (get-ns backend "api.db"))
+  (get-ns backend "api.graphdb"))
 
 (defn get-factory-ns
   [^Keyword backend]
