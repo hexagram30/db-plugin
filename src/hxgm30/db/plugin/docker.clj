@@ -27,19 +27,20 @@
 
 (defn compose-up
   [filename]
-  (println "Starting up database ...")
-  (get-out (shell/sh "docker-compose" "-f" "-" "up" "-d"
-                     :in (read-compose-file filename)
-                     :env {:uid (get-uid)
-                           :pwd (get-pwd)})))
+  (let [pwd (get-pwd)]
+    (println (format "Starting up database (mounted at %s)..." pwd))
+    (get-out (shell/sh "docker-compose" "-f" "-" "up" "-d"
+                       :in (read-compose-file filename)
+                       :env {:UID (get-uid)
+                             :PWD pwd}))))
 
 (defn compose-down
   [filename]
   (println "Shuting down database ...")
   (get-out (shell/sh "docker-compose" "-f" "-" "down"
                      :in (read-compose-file filename)
-                     :env {:uid (get-uid)
-                           :pwd (get-pwd)})))
+                     :env {:UID (get-uid)
+                           :PWD (get-pwd)})))
 
 (defn -main
   [cmd & args]
