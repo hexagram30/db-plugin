@@ -8,6 +8,10 @@
   []
   (:out (shell/sh "id" "-u" "$USER")))
 
+(defn get-pwd
+  []
+  (:out (shell/sh "pwd")))
+
 (defn read-compose-file
   [filename]
   (->> filename
@@ -20,14 +24,16 @@
   (println "Starting up database ...")
   (:out (shell/sh "docker-compose" "-f" "-" "up" "-d"
                 :in (read-compose-file filename)
-                :env {:uid (get-uid)})))
+                :env {:uid (get-uid)
+                      :pwd (get-pwd)})))
 
 (defn compose-down
   [filename]
   (println "Shuting down database ...")
   (:out (shell/sh "docker-compose" "-f" "-" "down"
               :in (read-compose-file filename)
-              :env {:uid (get-uid)})))
+              :env {:uid (get-uid)
+                    :pwd (get-pwd)})))
 
 (defn -main
   [cmd & args]
