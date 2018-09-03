@@ -1,4 +1,4 @@
-(ns hxgm30.graphdb.plugin.util
+(ns hxgm30.db.plugin.util
   (:import
     (clojure.lang Keyword)
     (clojure.lang Symbol)))
@@ -11,7 +11,7 @@
 
 (defn get-db-ns
   [^Keyword backend]
-  (get-ns backend "api.graphdb"))
+  (get-ns backend "api.db"))
 
 (defn get-factory-ns
   [^Keyword backend]

@@ -8,6 +8,7 @@
     [clojusc.twig :as logger]
     [com.stuartsierra.component :as component]
     [hxgm30.db.plugin.backend :as backend]
+    [hxgm30.db.plugin.component :as db-component]
     [hxgm30.db.plugin.config :as config]
     [hxgm30.db.plugin.util :as util]
     [trifl.java :refer [show-methods]])
@@ -64,19 +65,19 @@
 
 (defn get-backend
   []
-  (call-if-no-error backend/backend (system)))
+  (call-if-no-error db-component/backend (system)))
 
 (defn conn
   []
-  (call-if-no-error backend/db-conn (system)))
+  (call-if-no-error db-component/db-conn (system)))
 
 (defn factory
   []
-  (call-if-no-error backend/factory (system)))
+  (call-if-no-error db-component/factory (system)))
 
 (defn -load-backend-specific-dev
   [system]
-  (condp = (backend/backend system)
+  (condp = (db-component/backend system)
     :redis (load "/hxgm30/graphdb/plugin/redis/dev")
     :skip-load))
 
@@ -92,7 +93,7 @@
   [wrapper-name & rest]
   `(defn ~wrapper-name
     [~@rest]
-    (call-if-no-error backend/factory-call (system) '~wrapper-name)))
+    (call-if-no-error db-component/factory-call (system) '~wrapper-name)))
 
 (defn-factory dbs)
 
@@ -103,16 +104,16 @@
   `(defn ~wrapper-name
     [~@rest]
     ~(if args?
-      `(call-if-no-error backend/db-call (system) '~wrapper-name ~rest)
-      `(call-if-no-error backend/db-call (system) '~wrapper-name)))))
+      `(call-if-no-error db-component/db-call (system) '~wrapper-name ~rest)
+      `(call-if-no-error db-component/db-call (system) '~wrapper-name)))))
 
 (defmacro db-call
   [func & rest]
   (let [args? (and (coll? rest)
                    (seq rest))]
   (if args?
-    `(call-if-no-error backend/db-call (system) '~func ~rest)
-    `(call-if-no-error backend/db-call (system) '~func))))
+    `(call-if-no-error db-component/db-call (system) '~func ~rest)
+    `(call-if-no-error db-component/db-call (system) '~func))))
 
 (defn add-edge
   ([src dst]

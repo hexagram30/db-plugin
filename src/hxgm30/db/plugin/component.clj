@@ -1,8 +1,11 @@
 (ns hxgm30.db.plugin.component
   (:require
-    [hxgm30.db.plugin.config :as config]
     [com.stuartsierra.component :as component]
-    [taoensso.timbre :as log]))
+    [hxgm30.db.plugin.config :as config]
+    [hxgm30.db.plugin.util :as util]
+    [taoensso.timbre :as log])
+  (:import
+    (clojure.lang Keyword)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -12,19 +15,54 @@
   [system]
   (get-in system [:config :data]))
 
+(defn backend-plugin
+  [system]
+  (get-in (get-cfg system) [:backend :plugin]))
+
+(def backend #'backend-plugin)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Config Component API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn backend-plugin
-  [system]
-  (get-in (get-cfg system) [:backend :plugin]))
+(defn db-conn
+  ([system]
+    (db-conn system (backend system)))
+  ([system ^Keyword backend]
+    ((util/get-var backend :component 'get-conn) system)))
+
+(defn factory
+  ([system]
+    (factory system (backend system)))
+  ([system ^Keyword backend]
+    ((util/get-var backend :component 'get-factory) system)))
+
+(defn db-call
+  ([system func]
+    (db-call system func []))
+  ([system func args]
+    (db-call system (backend system) func args))
+  ([system ^Keyword backend func args]
+    (let [db-call-fn (util/get-var backend :component 'db-call)]
+      (log/debugf "Using db-call %s with args %s ..."
+                  db-call-fn
+                  [system func args])
+      (db-call-fn system func args))))
+
+(defn factory-call
+  ([system func]
+    (factory-call system func []))
+  ([system func args]
+    (factory-call system (backend system) func args))
+  ([system ^Keyword backend func args]
+    ((util/get-var backend :component 'factory-call) system func args)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Component Lifecycle Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defrecord DBPluginConfig [data])
+(defrecord DBPluginConfig
+  [data])
 
 (defn start
   [this]
