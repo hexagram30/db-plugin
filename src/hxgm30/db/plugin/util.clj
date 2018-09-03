@@ -5,29 +5,33 @@
 
 (def base-ns "hxgm30.db.plugin")
 
-(defn get-ns
+(defn construct-ns
   [^Keyword backend ns-suffix]
   (symbol (format "%s.%s.%s" base-ns (name backend) ns-suffix)))
 
-(defn get-db-ns
+(defn construct-db-ns
   [^Keyword backend]
-  (get-ns backend "api.db"))
+  (construct-ns backend "api.db"))
 
-(defn get-factory-ns
+(defn construct-factory-ns
   [^Keyword backend]
-  (get-ns backend "api.factory"))
+  (construct-ns backend "api.factory"))
 
-(defn get-component-ns
+(defn construct-component-ns
   [^Keyword backend]
-  (get-ns backend "component"))
+  (construct-ns backend "components.core"))
 
 (def ns-lookup
-  {:db get-db-ns
-   :factory get-factory-ns
-   :component get-component-ns})
+  {:db construct-db-ns
+   :factory construct-factory-ns
+   :component construct-component-ns})
+
+(defn get-ns
+  [^Keyword backend ^Keyword ns-type ^Symbol sym]
+  ((ns-type ns-lookup) backend))
 
 (defn get-var
-  [^Keyword backend ^Keyword ns-type^Symbol sym]
-  (let [namesp ((ns-type ns-lookup) backend)]
-    (require namesp)
-    (ns-resolve namesp sym)))
+  [^Keyword backend ^Keyword ns-type ^Symbol sym]
+  (let [ns (get-ns backend ns-type sym)]
+    (require ns)
+    (ns-resolve ns sym)))

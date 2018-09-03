@@ -9,5 +9,4 @@
   (flush [this])
   (open? [this])
   (rollback [this])
-  (show-features [this])
   (tx [this]))

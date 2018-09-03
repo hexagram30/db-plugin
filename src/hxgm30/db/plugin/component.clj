@@ -19,7 +19,9 @@
   [system]
   (get-in (get-cfg system) [:backend :plugin]))
 
-(def backend #'backend-plugin)
+(defn backend-subtype
+  [system]
+  (get-in (get-cfg system) [:backend :subtype]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Config Component API   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -27,13 +29,13 @@
 
 (defn db-conn
   ([system]
-    (db-conn system (backend system)))
+    (db-conn system (backend-plugin system)))
   ([system ^Keyword backend]
     ((util/get-var backend :component 'get-conn) system)))
 
 (defn factory
   ([system]
-    (factory system (backend system)))
+    (factory system (backend-plugin system)))
   ([system ^Keyword backend]
     ((util/get-var backend :component 'get-factory) system)))
 
@@ -41,7 +43,7 @@
   ([system func]
     (db-call system func []))
   ([system func args]
-    (db-call system (backend system) func args))
+    (db-call system (backend-plugin system) func args))
   ([system ^Keyword backend func args]
     (let [db-call-fn (util/get-var backend :component 'db-call)]
       (log/debugf "Using db-call %s with args %s ..."
@@ -53,7 +55,7 @@
   ([system func]
     (factory-call system func []))
   ([system func args]
-    (factory-call system (backend system) func args))
+    (factory-call system (backend-plugin system) func args))
   ([system ^Keyword backend func args]
     ((util/get-var backend :component 'factory-call) system func args)))
 
@@ -76,6 +78,7 @@
   (log/info "Stopping db plugin config component ...")
   (log/debug "Stopped db plugin config component.")
   (assoc this :data nil))
+
 
 (def lifecycle-behaviour
   {:start start
