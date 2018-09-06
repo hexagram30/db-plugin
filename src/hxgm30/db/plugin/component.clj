@@ -5,7 +5,8 @@
     [hxgm30.db.plugin.util :as util]
     [taoensso.timbre :as log])
   (:import
-    (clojure.lang Keyword)))
+    (clojure.lang Keyword)
+    (clojure.lang Symbol)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Utility Functions   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -40,11 +41,11 @@
     ((util/get-var backend :component 'get-factory) system)))
 
 (defn db-call
-  ([system func]
+  ([system ^Symbol func]
     (db-call system func []))
-  ([system func args]
+  ([system ^Symbol func args]
     (db-call system (backend-plugin system) func args))
-  ([system ^Keyword backend func args]
+  ([system ^Keyword backend ^Symbol func args]
     (let [db-call-fn (util/get-var backend :component 'db-call)]
       (log/debugf "Using db-call %s with args %s ..."
                   db-call-fn
@@ -52,11 +53,11 @@
       (db-call-fn system func args))))
 
 (defn factory-call
-  ([system func]
+  ([system ^Symbol func]
     (factory-call system func []))
-  ([system func args]
+  ([system ^Symbol func args]
     (factory-call system (backend-plugin system) func args))
-  ([system ^Keyword backend func args]
+  ([system ^Keyword backend ^Symbol func args]
     ((util/get-var backend :component 'factory-call) system func args)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
