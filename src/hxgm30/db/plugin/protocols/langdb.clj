@@ -1,5 +1,7 @@
 (defprotocol LangDBAPI
-  (ingest-stats [this language] [this race-name name-type generator-type])
+  (ingest-stats [this data]
+                [this language generator-type data]
+                [this race-name name-type generator-type data])
   (lang-stats [this language generator-type])
   (name-stats [this race-name name-type generator-type])
   ;; Note that pos-tag (part-of-speech tag) is one of the tags defined by the
