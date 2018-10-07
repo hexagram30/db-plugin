@@ -77,7 +77,7 @@
 (defn -load-backend-specific-dev
   [system]
   (condp = (backend/backend-plugin system)
-    :redis (load "/hxgm30/graphdb/plugin/redis/dev")
+    :redis (load "/hxgm30/dev/plugin/redis")
     :skip-load))
 
 (defn load-backend-specific-dev
