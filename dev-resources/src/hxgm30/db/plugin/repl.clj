@@ -7,8 +7,7 @@
     [clojusc.system-manager.core :refer :all]
     [clojusc.twig :as logger]
     [com.stuartsierra.component :as component]
-    [hxgm30.db.plugin.backend :as backend]
-    [hxgm30.db.plugin.component :as db-component]
+    [hxgm30.db.plugin.component :as backend]
     [hxgm30.db.plugin.config :as config]
     [hxgm30.db.plugin.util :as util]
     [trifl.java :refer [show-methods]])
@@ -65,19 +64,19 @@
 
 (defn get-backend
   []
-  (call-if-no-error db-component/backend (system)))
+  (call-if-no-error backend/backend-plugin (system)))
 
 (defn conn
   []
-  (call-if-no-error db-component/db-conn (system)))
+  (call-if-no-error backend/db-conn (system)))
 
 (defn factory
   []
-  (call-if-no-error db-component/factory (system)))
+  (call-if-no-error backend/factory (system)))
 
 (defn -load-backend-specific-dev
   [system]
-  (condp = (db-component/backend system)
+  (condp = (backend/backend-plugin system)
     :redis (load "/hxgm30/graphdb/plugin/redis/dev")
     :skip-load))
 
@@ -93,7 +92,7 @@
   [wrapper-name & rest]
   `(defn ~wrapper-name
     [~@rest]
-    (call-if-no-error db-component/factory-call (system) '~wrapper-name)))
+    (call-if-no-error backend/factory-call (system) '~wrapper-name)))
 
 (defn-factory dbs)
 
@@ -104,30 +103,17 @@
   `(defn ~wrapper-name
     [~@rest]
     ~(if args?
-      `(call-if-no-error db-component/db-call (system) '~wrapper-name ~rest)
-      `(call-if-no-error db-component/db-call (system) '~wrapper-name)))))
+      `(call-if-no-error backend/db-call (system) '~wrapper-name ~rest)
+      `(call-if-no-error backend/db-call (system) '~wrapper-name)))))
 
 (defmacro db-call
   [func & rest]
   (let [args? (and (coll? rest)
                    (seq rest))]
   (if args?
-    `(call-if-no-error db-component/db-call (system) '~func ~rest)
-    `(call-if-no-error db-component/db-call (system) '~func))))
+    `(call-if-no-error backend/db-call (system) '~func ~rest)
+    `(call-if-no-error backend/db-call (system) '~func))))
 
-(defn add-edge
-  ([src dst]
-    (db-call add-edge src dst))
-  ([src dst attrs]
-    (db-call add-edge src dst attrs))
-  ([src dst attrs label attrs]
-    (db-call add-edge src dst attrs label attrs)))
-
-(defn add-vertex
-  ([]
-    (db-call add-vertex))
-  ([attrs]
-    (db-call add-vertex attrs)))
 
 (defn-db backup)
 (defn-db closed?)
@@ -139,32 +125,3 @@
     (db-call create-index data-type))
   ([data-type id]
     (db-call create-index data-type id)))
-
-(defn-db dump)
-(defn-db edges)
-(defn-db features)
-(defn-db get-edge id)
-(defn-db get-edges)
-(defn-db get-relations)
-(defn-db get-vertex id)
-(defn-db get-vertex-relations id)
-(defn-db get-vertices)
-(defn-db get-vertices-relations ids)
-(defn-db find-relation-ids)
-(defn-db find-relations vertex-id)
-(defn-db find-vertex-ids)
-(defn-db graph-name)
-(defn-db open?)
-(defn-db relations)
-(defn-db remove-edge id)
-(defn-db remove-edges)
-(defn-db remove-vertex id)
-(defn-db remove-relation rid vid)
-(defn-db remove-relations vid)
-(defn-db variables)
-
-(defn vertices
-  ([]
-    (db-call vertices))
-  ([ids]
-    (db-call vertices ids)))
