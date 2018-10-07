@@ -33,7 +33,7 @@
       :exclusions [
         org.clojure/tools.namespace]
       :dependencies [
-        [clojusc/trifl "0.3.0"]
+        [clojusc/trifl "0.4.0"]
         [org.clojure/tools.namespace "0.2.11"]]
       :plugins [
         [lein-shell "0.5.0"]
