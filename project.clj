@@ -86,6 +86,7 @@
     "build" ["do"
       ["clean"]
       ["check-vers"]
+      ["ubercompile"]
       ["lint"]
       ["ltest" ":all"]
       ["uberjar"]]})
