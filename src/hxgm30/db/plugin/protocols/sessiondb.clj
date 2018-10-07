@@ -17,6 +17,8 @@
   (current-shell [this user-id]
     "Offered as a convenience to return the shell at the top of the shell
     stack.")
+  (get [this user-id]
+    "Get all of the session data for the given user.")
   (update [this user-id data]
     "Update (deep merge) all of the given user's session data with the
     provided data."))
