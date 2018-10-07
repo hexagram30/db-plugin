@@ -29,7 +29,7 @@
     :ubercompile {
       :aot :all}
     :dev {
-      :aot [hxgm30.db.plugin.protocols]
+      ;:aot [hxgm30.db.plugin.protocols]
       :exclusions [
         org.clojure/tools.namespace]
       :dependencies [
