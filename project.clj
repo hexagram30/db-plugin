@@ -21,10 +21,10 @@
     :name "Apache License, Version 2.0"
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [
-    [clojusc/system-manager "0.3.0-SNAPSHOT"]
+    [clojusc/system-manager "0.3.0"]
     [clojusc/twig "0.4.0"]
     [hexagram30/common "0.1.0-SNAPSHOT"]
-    [org.clojure/clojure "1.9.0"]]
+    [org.clojure/clojure "1.10.0"]]
   :profiles {
     :ubercompile {
       :aot :all}
@@ -33,7 +33,7 @@
       :exclusions [
         org.clojure/tools.namespace]
       :dependencies [
-        [clojusc/trifl "0.4.0"]
+        [clojusc/trifl "0.4.2"]
         [org.clojure/tools.namespace "0.2.11"]]
       :plugins [
         [lein-shell "0.5.0"]
@@ -51,11 +51,11 @@
       :source-paths ^:replace ["src"]
       :test-paths ^:replace []
       :plugins [
-        [jonase/eastwood "0.3.1"]
+        [jonase/eastwood "0.3.4"]
         [lein-ancient "0.6.15"]
         [lein-bikeshed "0.5.1"]
         [lein-kibit "0.1.6"]
-        [venantius/yagni "0.1.6"]]}
+        [venantius/yagni "0.1.7"]]}
     :test {
       :plugins [
         [lein-ltest "0.3.0"]]}}
